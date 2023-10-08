@@ -54,6 +54,16 @@ class CashMachineServiceTest {
     @Test
     void getMoney() {
         when(cardsDao.getCardByNumber("2222"))
+                .thenThrow(IllegalArgumentException.class);
+
+        assertThrows(RuntimeException.class, () ->
+                cashMachineService.getMoney(cashMachine, "2222", "1234", BigDecimal.valueOf(150)));
+
+    }
+
+    @Test
+    void getMoney2() {
+        when(cardsDao.getCardByNumber("2222"))
                 .thenReturn(new Card(1, "2222", 2L, TestUtil.getHash("1234")));
 
         List<Integer> money = cashMachineService.getMoney(cashMachine, "2222", "1234", BigDecimal.valueOf(150));
@@ -63,10 +73,18 @@ class CashMachineServiceTest {
 
     @Test
     void putMoney() {
+        when(cardsDao.getCardByNumber("2222"))
+                .thenReturn(new Card(1, "2222", 2L, TestUtil.getHash("1234")));
+
+        BigDecimal bigDecimal = cashMachineService.putMoney(cashMachine, "2222", "1234", List.of(10, 10, 10, 10));
+
+        assertNull(bigDecimal);
     }
 
     @Test
     void checkBalance() {
+
+        BigDecimal bigDecimal = cashMachineService.checkBalance(cashMachine, "2222", "1234");
 
     }
 

@@ -1,5 +1,6 @@
 package otus.study.cashmachine.bank.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -67,8 +68,30 @@ public class CardServiceTest {
         assertEquals(100L, idCaptor.getValue().longValue());
     }
 
+
+    @Test
+    void getMoneyFalsePin() {
+        assertThrows(IllegalArgumentException.class,
+                () -> cardService.getMoney("1111", "0000", BigDecimal.ONE)) ;
+    }
+
     @Test
     void putMoney() {
+
+        ArgumentCaptor<BigDecimal> amountCaptor = ArgumentCaptor.forClass(BigDecimal.class);
+        ArgumentCaptor<Long> idCaptor = ArgumentCaptor.forClass(Long.class);
+
+        when(cardsDao.getCardByNumber("1111"))
+                .thenReturn(new Card(1L, "1111", 100L, TestUtil.getHash("0000")));
+
+        when(accountService.putMoney(idCaptor.capture(), amountCaptor.capture()))
+                .thenReturn(BigDecimal.TEN);
+
+        cardService.putMoney("1111", "0000", BigDecimal.ONE);
+
+        verify(accountService, only()).putMoney(anyLong(), any());
+        assertEquals(BigDecimal.ONE, amountCaptor.getValue());
+        assertEquals(100L, idCaptor.getValue().longValue());
     }
 
     @Test

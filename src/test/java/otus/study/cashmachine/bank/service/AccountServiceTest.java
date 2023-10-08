@@ -12,7 +12,8 @@ import otus.study.cashmachine.bank.service.impl.AccountServiceImpl;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -43,13 +44,28 @@ public class AccountServiceTest {
 
     @Test
     void getSum() {
+        when(accountDao.getAccount(1L)).thenReturn(new Account(1L, BigDecimal.TEN));
+        BigDecimal money = accountServiceImpl.getMoney(1L, BigDecimal.TWO);
+        assertEquals(money, BigDecimal.valueOf(8));
+    }
+
+    @Test
+    void getSumNotEnoughMoney() {
+        when(accountDao.getAccount(1L)).thenReturn(new Account(1L, BigDecimal.ONE));
+        assertThrows(IllegalArgumentException.class, () -> accountServiceImpl.getMoney(1L, BigDecimal.TWO));
     }
 
     @Test
     void getAccount() {
+        when(accountDao.getAccount(1L)).thenReturn(new Account(1L, BigDecimal.TEN));
+        Account account = accountServiceImpl.getAccount(1L);
+        assertNotNull(account);
     }
 
     @Test
     void checkBalance() {
+        when(accountDao.getAccount(1L)).thenReturn(new Account(1L, BigDecimal.TEN));
+        BigDecimal money = accountServiceImpl.checkBalance(1L);
+        assertEquals(money, BigDecimal.valueOf(10));
     }
 }
