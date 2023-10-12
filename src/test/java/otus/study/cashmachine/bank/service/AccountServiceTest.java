@@ -45,14 +45,14 @@ public class AccountServiceTest {
     @Test
     void getSum() {
         when(accountDao.getAccount(1L)).thenReturn(new Account(1L, BigDecimal.TEN));
-        BigDecimal money = accountServiceImpl.getMoney(1L, BigDecimal.TWO);
+        BigDecimal money = accountServiceImpl.getMoney(1L, BigDecimal.valueOf(2));
         assertEquals(money, BigDecimal.valueOf(8));
     }
 
     @Test
     void getSumNotEnoughMoney() {
         when(accountDao.getAccount(1L)).thenReturn(new Account(1L, BigDecimal.ONE));
-        assertThrows(IllegalArgumentException.class, () -> accountServiceImpl.getMoney(1L, BigDecimal.TWO));
+        assertThrows(IllegalArgumentException.class, () -> accountServiceImpl.getMoney(1L, BigDecimal.valueOf(2)));
     }
 
     @Test
