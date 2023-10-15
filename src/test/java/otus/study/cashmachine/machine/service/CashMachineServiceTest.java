@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,9 +84,10 @@ class CashMachineServiceTest {
 
     @Test
     void checkBalance() {
-
+        Card card = new Card(1L, "2222", 1L, TestUtil.getHash("1234"));
+        when(cardsDao.getCardByNumber(anyString())).thenReturn(card);
         BigDecimal bigDecimal = cashMachineService.checkBalance(cashMachine, "2222", "1234");
-
+        assertNull(bigDecimal);
     }
 
     @Test
