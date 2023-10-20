@@ -86,9 +86,10 @@ class CashMachineServiceTest {
 
     @Test
     void checkBalance() {
-
-        BigDecimal bigDecimal = cashMachineService.checkBalance(cashMachine, CARD_NUMBER, PIN);
-
+        Card card = new Card(1L, "2222", 1L, TestUtil.getHash("1234"));
+        when(cardsDao.getCardByNumber(anyString())).thenReturn(card);
+        BigDecimal bigDecimal = cashMachineService.checkBalance(cashMachine, "2222", "1234");
+        assertNull(bigDecimal);
     }
 
     @Test
