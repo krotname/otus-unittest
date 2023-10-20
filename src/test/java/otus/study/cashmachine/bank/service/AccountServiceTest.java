@@ -1,10 +1,10 @@
 package otus.study.cashmachine.bank.service;
 
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
-import org.mockito.internal.matchers.Null;
 import org.mockito.junit.jupiter.MockitoExtension;
 import otus.study.cashmachine.bank.dao.AccountDao;
 import otus.study.cashmachine.bank.data.Account;
@@ -27,6 +27,7 @@ public class AccountServiceTest {
     private AccountServiceImpl accountServiceImpl;
 
     @Test
+    @DisplayName("Создание мока аккаунта")
     void createAccountMock() {
         Account account = accountServiceImpl.createAccount(ArgumentMatchers.any());
         System.out.println(account);
@@ -39,11 +40,7 @@ public class AccountServiceTest {
     }
 
     @Test
-    void addSum() {
-    }
-
-    @Test
-    void getSum() {
+    void testGetSumSuccess() {
         when(accountDao.getAccount(1L)).thenReturn(new Account(1L, BigDecimal.TEN));
         BigDecimal money = accountServiceImpl.getMoney(1L, BigDecimal.valueOf(2));
         assertEquals(money, BigDecimal.valueOf(8));

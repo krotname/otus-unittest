@@ -15,8 +15,6 @@ import otus.study.cashmachine.machine.data.MoneyBox;
 import otus.study.cashmachine.machine.service.impl.CashMachineServiceImpl;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +23,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CashMachineServiceTest {
 
+    public static final String CARD_NUMBER = "2222";
+    public static final String PIN = "1234";
+    public static final String NEW_PIN = "1111";
+    public static final int CORRECT_NUMBER = 150;
     @Captor
     private ArgumentCaptor<String> captor;
 
@@ -53,30 +55,31 @@ class CashMachineServiceTest {
 
     @Test
     void getMoney() {
-        when(cardsDao.getCardByNumber("2222"))
+        when(cardsDao.getCardByNumber(CARD_NUMBER))
                 .thenThrow(IllegalArgumentException.class);
 
         assertThrows(RuntimeException.class, () ->
-                cashMachineService.getMoney(cashMachine, "2222", "1234", BigDecimal.valueOf(150)));
+                cashMachineService.getMoney(cashMachine, CARD_NUMBER, PIN, BigDecimal.valueOf(CORRECT_NUMBER)));
 
     }
 
+
     @Test
     void getMoney2() {
-        when(cardsDao.getCardByNumber("2222"))
-                .thenReturn(new Card(1, "2222", 2L, TestUtil.getHash("1234")));
+        when(cardsDao.getCardByNumber(CARD_NUMBER))
+                .thenReturn(new Card(1, CARD_NUMBER, 2L, TestUtil.getHash(PIN)));
 
-        List<Integer> money = cashMachineService.getMoney(cashMachine, "2222", "1234", BigDecimal.valueOf(150));
+        List<Integer> money = cashMachineService.getMoney(cashMachine, CARD_NUMBER, PIN, BigDecimal.valueOf(CORRECT_NUMBER));
 
         assertTrue(money.isEmpty());
     }
 
     @Test
     void putMoney() {
-        when(cardsDao.getCardByNumber("2222"))
-                .thenReturn(new Card(1, "2222", 2L, TestUtil.getHash("1234")));
+        when(cardsDao.getCardByNumber(CARD_NUMBER))
+                .thenReturn(new Card(1, CARD_NUMBER, 2L, TestUtil.getHash(PIN)));
 
-        BigDecimal bigDecimal = cashMachineService.putMoney(cashMachine, "2222", "1234", List.of(10, 10, 10, 10));
+        BigDecimal bigDecimal = cashMachineService.putMoney(cashMachine, CARD_NUMBER, PIN, List.of(10, 10, 10, 10));
 
         assertNull(bigDecimal);
     }
@@ -84,23 +87,23 @@ class CashMachineServiceTest {
     @Test
     void checkBalance() {
 
-        BigDecimal bigDecimal = cashMachineService.checkBalance(cashMachine, "2222", "1234");
+        BigDecimal bigDecimal = cashMachineService.checkBalance(cashMachine, CARD_NUMBER, PIN);
 
     }
 
     @Test
     void changePin() {
         when(cardsDao.getCardByNumber(captor.capture()))
-                .thenReturn(new Card(1,"1234", 1L, TestUtil.getHash("2222")));
+                .thenReturn(new Card(1, PIN, 1L, TestUtil.getHash(CARD_NUMBER)));
 
-        assertTrue(cashMachineService.changePin("1234", "2222", "1111"));
+        assertTrue(cashMachineService.changePin(PIN, CARD_NUMBER, NEW_PIN));
     }
 
     @Test
     void changePinWithAnswer() {
         when(cardsDao.getCardByNumber(captor.capture()))
-                .thenAnswer(i -> new Card(1, String.valueOf(i.getArguments()[0]), 1L, TestUtil.getHash("2222")));
+                .thenAnswer(i -> new Card(1, String.valueOf(i.getArguments()[0]), 1L, TestUtil.getHash(CARD_NUMBER)));
 
-        assertTrue(cashMachineService.changePin("1234", "2222", "1111"));
+        assertTrue(cashMachineService.changePin(PIN, CARD_NUMBER, NEW_PIN));
     }
 }
